@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <span class="nav-link">Welcome, <a href="user.html?userId=${userId}">${username}</a></span>
     </li>
     <li class="nav-item">
-      <a class="mx-2 btn btn-danger" href="#" onclick="logout()">Logout</a>
+      <a class="m-2 btn btn-danger" href="#" onclick="logout()">Logout</a>
     </li>
   `;
 
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (role === "creator") {
       navbar.innerHTML += `
       <li class="nav-item">
-        <a class="mx-2 btn btn-primary" href="upload.html">Upload</a>
+        <a class="m-2 btn btn-primary" href="upload.html">Upload</a>
       </li>
     `;
     }
