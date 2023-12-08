@@ -145,7 +145,7 @@
           showSpinner();
           $.ajax({
             type: "GET",
-            url: "http://localhost:3000/videos",
+            url: "http://13.211.141.71:3000/videos",
             success: function (videos) {
               displayVideos(videos);
               hideSpinner();
@@ -208,7 +208,7 @@
           showSpinner();
           $.ajax({
             type: "GET",
-            url: `http://localhost:3000/videos?search=${searchTerm}`,
+            url: `http://13.211.141.71:3000/videos?search=${searchTerm}`,
             success: function (videos) {
               displayVideos(videos);
               hideSpinner();
@@ -283,7 +283,7 @@
           console.log("Video Id", videoId);
           $.ajax({
             type: "GET",
-            url: `http://localhost:3000/comments?videoId=${videoId}`,
+            url: `http://13.211.141.71:3000/comments?videoId=${videoId}`,
             success: function (comments) {
               console.log(comments);
               const commentsContainer = $("#commentsContainer");
@@ -324,7 +324,7 @@
           }
           $.ajax({
             type: "POST",
-            url: "http://localhost:3000/comments",
+            url: "http://13.211.141.71:3000/comments",
             data: JSON.stringify({
               videoId: videoId,
               userid: userid,

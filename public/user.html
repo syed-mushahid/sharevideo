@@ -147,7 +147,7 @@
           showSpinner();
           $.ajax({
             type: "GET",
-            url: `http://localhost:3000/user-videos?userId=${userId}`,
+            url: `http://13.211.141.71:3000/user-videos?userId=${userId}`,
             success: function (videos) {
               displayVideos(videos);
               hideSpinner();
@@ -216,7 +216,7 @@
           showSpinner();
           $.ajax({
             type: "GET",
-            url: `http://localhost:3000/user-videos?userId=${userId}&search=${searchTerm}`,
+            url: `http://13.211.141.71:3000/user-videos?userId=${userId}&search=${searchTerm}`,
             success: function (videos) {
               displayVideos(videos);
               hideSpinner();
@@ -291,7 +291,7 @@
           console.log("Video Id", videoId);
           $.ajax({
             type: "GET",
-            url: `http://localhost:3000/comments?videoId=${videoId}`,
+            url: `http://13.211.141.71:3000/comments?videoId=${videoId}`,
             success: function (comments) {
               console.log(comments);
               const commentsContainer = $("#commentsContainer");
@@ -332,7 +332,7 @@
           }
           $.ajax({
             type: "POST",
-            url: "http://localhost:3000/comments",
+            url: "http://13.211.141.71:3000/comments",
             data: JSON.stringify({
               videoId: videoId,
               userid: userid,
@@ -388,7 +388,7 @@
 
         $.ajax({
           type: "DELETE",
-          url: `http://localhost:3000/videos/${videoId}`,
+          url: `http://13.211.141.71:3000/videos/${videoId}`,
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
