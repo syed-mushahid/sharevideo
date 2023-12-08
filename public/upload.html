@@ -135,8 +135,17 @@
                   type="button"
                   id="uploadButton"
                   class="btn btn-primary w-100 rounded-pill py-2"
+                  
                 >
-                  Upload
+                  <span id="uploadButtonText">Upload</span>
+                  <div
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    id="loadingSpinner"
+                    style="display: none"
+                  >
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
                 </button>
               </form>
             </div>
@@ -174,6 +183,11 @@
         });
         // Handle video upload on button click
         $("#uploadButton").click(function () {
+          // Disable the button and show loading spinner
+          $("#uploadButton").prop("disabled", true);
+          $("#loadingSpinner").show();
+          $("#uploadButtonText").text("Uploading...");
+
           // User is authenticated and has the correct role, proceed with the video upload
           const formData = new FormData();
           const videoFile = $("#videoFile")[0].files[0];
@@ -196,11 +210,21 @@
             contentType: false,
             processData: false,
             success: function (data) {
+              // Enable the button and hide loading spinner on success
+              $("#uploadButton").prop("disabled", false);
+              $("#loadingSpinner").hide();
+              $("#uploadButtonText").text("Upload");
+
               alert(data.message);
               console.log(data.message);
               window.location.href = "index.html";
             },
             error: function (error) {
+              // Enable the button and hide loading spinner on error
+              $("#uploadButton").prop("disabled", false);
+              $("#loadingSpinner").hide();
+              $("#uploadButtonText").text("Upload");
+
               alert("Error uploading video. Please try again.");
               console.error(error);
             },
