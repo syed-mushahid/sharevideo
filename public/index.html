@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Video Sharing App</title>
+    <style></style>
+  </head>
+  <body class="bg-dark">
+    <!-- Navbar -->
+    <nav
+      style=""
+      class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow mb-5 sticky-top"
+    >
+      <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand" href="/">
+          <h3>VideoShare</h3>
+        </a>
+
+        <!-- Navbar links -->
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarNav"
+        >
+          <ul class="navbar-nav">
+            <!-- Add your login and sign-up links here -->
+            <li class="nav-item">
+              <a class="nav-link" href="login.html">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="register.html">Sign Up</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h2 class="text-center text-white">Video Library</h2>
+      <!-- Search bar -->
+      <div class="my-5 col-md-6 mx-auto">
+        <input
+          type="text"
+          class="form-control"
+          id="searchInput"
+          placeholder="Search videos"
+        />
+      </div>
+
+      <!-- Loading spinner -->
+      <div class="spinner-container mx-auto">
+        <div class="d-flex justify-content-center align-items-center p-5">
+          <div class="spinner" style="width: 20rem; height: 20rem"></div>
+        </div>
+      </div>
+
+      <div id="videoList" class="row row-cols-1 row-cols-md-3 g-4"></div>
+    </div>
+
+    <!-- Video Details Modal -->
+    <div
+      class="modal fade"
+      id="videoDetailsModal"
+      tabindex="-1"
+      aria-labelledby="videoDetailsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="">
+          <div class="modal-header">
+            <h5 class="modal-title" id="videoDetailsModalLabel">
+              Video Details
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-8 mx-auto">
+                <video controls style="width: 100%">
+                  <source id="videoSource" src="" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div class="col-md-12 mt-4 pt-2 border-top">
+                <h5>Comments</h5>
+                <div
+                  id="commentsContainer"
+                  style="max-height: 400px; overflow: scroll"
+                ></div>
+                <div id="commentFormContainer">
+                  <textarea
+                    class="form-control"
+                    id="commentText"
+                    rows="3"
+                    placeholder="Add a comment"
+                  ></textarea>
+                  <button class="btn btn-primary mt-2" id="addCommentBtn">
+                    Add Comment
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="/main.js"></script>
+    <script>
+      $(document).ready(function () {
+        // Fetch videos on page load
+        fetchVideos();
+
+        // Handle search input change
+        $("#searchInput").on("input", function () {
+          const searchTerm = $(this).val().toLowerCase();
+          searchVideos(searchTerm);
+        });
+
+        function showSpinner() {
+          $(".spinner-container").show();
+        }
+
+        function hideSpinner() {
+          $(".spinner-container").hide();
+        }
+
+        function fetchVideos() {
+          showSpinner();
+          $.ajax({
+            type: "GET",
+            url: "http://localhost:3000/videos",
+            success: function (videos) {
+              displayVideos(videos);
+              hideSpinner();
+            },
+            error: function (error) {
+              console.error("Error fetching videos:", error);
+              hideSpinner();
+            },
+          });
+        }
+
+        function displayVideos(videos) {
+          const videoList = $("#videoList");
+          videoList.empty();
+
+          videos.forEach(function (video) {
+            // Add data attributes to store video information
+            const card = $(`
+          <div class="col">
+            <div class="card border shadow bg-dark text-light" role='button' data-video-id="${
+              video._id
+            }" data-video-path="${video.filePath}" data-title="${
+              video.title
+            }" data-publisher="${video.publisher}" data-producer="${
+              video.producer
+            }" data-genre="${video.genre}" data-age-rating="${
+              video.ageRating
+            }" data-uploaded-by="${video.user._id}">
+
+            <img src="${
+              video.thumbnailFilePath || "https://via.placeholder.com/150"
+            }" style="height: 200px;object-fit: cover; " class="card-img-top" alt="Video Thumbnail">
+              <div class="card-body">
+                <h5 class="card-title">${video.title}</h5>
+                <p class="card-text">Uploaded by: <a href="user.html?userId=${
+                  video.user._id
+                }" class="text-light">${video.user.username}</a></p>
+                <div class='d-flex flex-wrap'>
+                  <p class="col-md-6 col-12 card-text">Publisher: ${
+                    video.publisher
+                  }</p>
+                  <p class="col-md-6 col-12 card-text">Producer: ${
+                    video.producer
+                  }</p>
+                  <p class="col-md-6 col-12 card-text">Genre: ${video.genre}</p>
+                  <p class="col-md-6 col-12 card-text">Age Rating: ${
+                    video.ageRating
+                  }</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `);
+
+            // Append the card to the video list
+            videoList.append(card);
+          });
+        }
+        function searchVideos(searchTerm) {
+          showSpinner();
+          $.ajax({
+            type: "GET",
+            url: `http://localhost:3000/videos?search=${searchTerm}`,
+            success: function (videos) {
+              displayVideos(videos);
+              hideSpinner();
+            },
+            error: function (error) {
+              console.error("Error searching videos:", error);
+              hideSpinner();
+            },
+          });
+        }
+      });
+    </script>
+    <script>
+      $(document).ready(function () {
+        // Open video details modal on card click
+        $("#videoList").on("click", ".card", function () {
+          const videoFilePath = $(this).data("video-path");
+          const videoId = $(this).data("video-id");
+          const title = $(this).data("title");
+          // Fetch and display comments
+          fetchAndDisplayComments(videoId);
+
+          // Show or hide comment form based on authentication status
+          const isAuthenticated = localStorage.getItem("token") !== null;
+          $("#commentFormContainer").toggle(isAuthenticated);
+
+          // Set data attributes for the modal
+          $("#videoDetailsModal .modal-title").data("video-id", videoId);
+          $("#videoDetailsModal .modal-title").text(title);
+
+          // Dynamically create a video element
+          const videoElement = document.createElement("video");
+          videoElement.controls = true;
+          videoElement.style.width = "100%";
+
+          // Dynamically create a source element and set its attributes
+          const sourceElement = document.createElement("source");
+          sourceElement.src = videoFilePath;
+          sourceElement.type = "video/mp4";
+
+          // Append the source element to the video element
+          videoElement.appendChild(sourceElement);
+
+          // Clear any previous video elements
+          $("#videoDetailsModal .modal-body .row .col-md-8").empty();
+
+          // Append the video element to the modal body
+          $("#videoDetailsModal .modal-body .row .col-md-8").append(
+            videoElement
+          );
+
+          // Open the modal
+          $("#videoDetailsModal").modal("show");
+        });
+
+        // Add comment button click event
+        $("#addCommentBtn").on("click", function () {
+          const videoId = $("#videoDetailsModal .modal-title").data("video-id");
+          const commentText = $("#commentText").val();
+
+          if (commentText.trim() !== "") {
+            // Add comment to the server
+            addCommentToServer(videoId, commentText);
+
+            // Clear the comment text area
+            $("#commentText").val("");
+          }
+        });
+
+        // Function to fetch and display comments
+        function fetchAndDisplayComments(videoId) {
+          console.log("Video Id", videoId);
+          $.ajax({
+            type: "GET",
+            url: `http://localhost:3000/comments?videoId=${videoId}`,
+            success: function (comments) {
+              console.log(comments);
+              const commentsContainer = $("#commentsContainer");
+              commentsContainer.empty();
+
+              if (comments.length > 0) {
+                comments.forEach(function (comment) {
+                  commentsContainer.append(`
+              <div class="py-2 border-top">
+                <strong>${comment.user.username}:</strong> ${comment.text}
+              </div>
+            `);
+                });
+              } else {
+                commentsContainer.append("<p>No comments yet.</p>");
+              }
+            },
+            error: function (error) {
+              console.error("Error fetching comments:", error);
+            },
+          });
+        }
+
+        // Function to add comment to the server
+        function addCommentToServer(videoId, commentText) {
+          var userid = "";
+          const token = localStorage.getItem("token");
+
+          if (token) {
+            // If a token is present, user is logged in
+            // Fetch user information from the token or any other API if needed
+            // For now, let's assume the token contains the user's userid and role
+            const decodedToken = parseJwt(token);
+            userid = decodedToken ? decodedToken.userId : null;
+          } else {
+            alert("you are not logged in.");
+            return;
+          }
+          $.ajax({
+            type: "POST",
+            url: "http://localhost:3000/comments",
+            data: JSON.stringify({
+              videoId: videoId,
+              userid: userid,
+              text: commentText,
+            }),
+            contentType: "application/json",
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+            success: function (response) {
+              // Refresh comments after adding
+              fetchAndDisplayComments(videoId);
+              // alert("Comment added successfully!");
+            },
+            error: function (error) {
+              console.error("Error adding comment:", error);
+              alert("Error adding comment. Please try again.");
+            },
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
