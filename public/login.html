@@ -116,7 +116,7 @@
             contentType: "application/json",
             success: function (data) {
               localStorage.setItem("token", data.token);
-              window.location = "/index.html";
+              window.location = "/public/index.html";
             },
             error: function (error) {
               // Display login error in a Bootstrap alert
